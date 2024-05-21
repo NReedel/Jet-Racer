@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <link rel="stylesheet" href="./CSS/index.css">
+        <script src="./JS/index.js" defer></script>
+        <script src="./JS/globalMusicVolume.js" defer></script>
+        <script src="./JS/menuMusic_indexSettings.js" defer></script>
+
+        <title>Jet Racer</title>
+    </head>
+    
+    <body>
+        <div class="modal" id="modal">
+            <div class="modal-content" id="modal">
+                <label for="volumeSlider">Music Volume</label>e
+                <div class="volume-container">
+                    <img src="/Jet-Racer/IMGS/Icons/volume-icon.png" alt="" class="volume-icon">
+                    <input type="range" min="1" max="100" value="50" class="volume-slider" id="volumeSlider" name="volumeSlider">
+                    <p class="volume-amount" id="volumeAmount">50%</p>
+                </div>
+            </div>
+        </div>
+        <div class="menu-items">
+            <img id="playerAvatar" src="./IMGS/Characters/jet_logo.png" alt="Logo">
+            <h1>Jet Racer</h1>
+            <a id="startEndlessBtn">Start Game</a>
+            <a id="startShipSelect">Ship Select</a>
+            <a id="startZoneSelect">Zone Select</a> 
+            <a id="settings">Settings
+                <!-- <img src="/Jet-Racer/IMGS/Icons/settings-icon.png" alt="" class="settings-icon"> -->
+            </a>
+        </div>
+    </body>
+</html>
