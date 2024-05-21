@@ -4,9 +4,52 @@ let intitalSpawn = 2;
 let startSpawn = intitalSpawn;
 let endSpawn = [10,20,30];
 
-
 function everyInterval(n){
     return (gameArea.frameNumber / n) % 1 == 0;
+}
+
+// Create a style element for the pseudo-element
+var pseudoStyle = document.createElement('style');
+document.head.appendChild(pseudoStyle);
+
+function updatePseudoElementStyle(imageUrl) {
+    pseudoStyle.innerHTML = `
+        #background::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: -100%; /* This will place the copy of the background image on the right side */
+            width: 100%;
+            height: 100%;
+            background-image: url('${imageUrl}');
+            background-repeat: repeat-x; 
+            background-size: cover; 
+            background-position: center, center;
+        }
+    `;
+}
+
+function loadNextLevel(lvl) {
+    var background = document.getElementById('background');
+    var compBackgroundImage = window.getComputedStyle(background);
+    var backgroundImageUrl = compBackgroundImage.backgroundImage.replace(/^url\(['"]?([^'"]*)['"]?\)$/, '$1');
+    const hasZoneFiles = localStorage.getItem('zoneFiles') !== null;
+    if (hasZoneFiles) {
+        let zoneFiles = JSON.parse(localStorage.getItem('zoneFiles'));
+        let nextLevel = zoneFiles[1][lvl];
+        // console.log(nextLevel);
+        let parts = backgroundImageUrl.split('/');
+        let currentLevel = parts[parts.length - 1];
+        if (nextLevel !== currentLevel) {
+            backgroundImageUrl = backgroundImageUrl.replace(currentLevel, nextLevel);
+            // console.log(backgroundImageUrl);
+            background.style.backgroundImage = 'url(' + backgroundImageUrl + ')';
+            // Update the pseudo-element style
+            updatePseudoElementStyle(backgroundImageUrl);
+        }
+    } else {
+        alert("error: couldn't load next level");
+    }
 }
 
 // With a given level config, finds every object that can be currently spawned.
@@ -22,9 +65,8 @@ function findSpawnableObjects(levelObjects){
             if (object.spawnRate >= Math.random()){
                 spawnables.add(object.objectID);
             }
-        }
-        else if(time >= endSpawn[level-1] && level-1 != endSpawn.length){
-            console.log(time);
+        } else if(time >= endSpawn[level-1] && level-1 != endSpawn.length){
+            //console.log(time);
             startSpawn = intitalSpawn + endSpawn[level-1];
             level += 1;
             // setTimeout(() => {loadNextLevel(level)}, (startSpawn)*1000); // optional transistion
@@ -33,42 +75,6 @@ function findSpawnableObjects(levelObjects){
     });
 
     return spawnables;
-}
-
-function loadNextLevel(lvl){
-    var compBackgroundImage = window.getComputedStyle(background);
-    var backgroundImageUrl = compBackgroundImage.backgroundImage.replace(/^url\(['"]?([^'"]*)['"]?\)$/, '$1');
-    const hasZoneFiles = localStorage.getItem('zoneFiles') !== null;
-    if (hasZoneFiles){
-        let zoneFiles = JSON.parse(localStorage.getItem('zoneFiles'));
-        let nextLevel = zoneFiles[1][lvl];
-        console.log(nextLevel);
-        let parts = backgroundImageUrl .split('/');
-        let currentLevel = parts[parts.length-1];
-        if(nextLevel !== currentLevel){
-            backgroundImageUrl = backgroundImageUrl.replace(currentLevel,nextLevel);
-            console.log(backgroundImageUrl)
-            background.style.backgroundImage = 'url('+backgroundImageUrl+')';
-            // Get the stylesheets
-            var stylesheets = document.styleSheets;
-            // Loop through each stylesheet
-            for (var i = 0; i < stylesheets.length; i++) {
-                var rules = stylesheets[i].cssRules || stylesheets[i].rules;
-
-                // Loop through each rule in the stylesheet
-                for (var j = 0; j < rules.length; j++) {
-                    // Check if the rule is for #background::after
-                    if (rules[j].selectorText === "#background::after") {
-                        // Change the background image URL of ::after
-                        rules[j].style.backgroundImage = 'url('+backgroundImageUrl+')';
-                    }
-                }
-            }
-        }
-    }
-    else{
-        alert("error: couldn't load next level");
-    }
 }
 
 function spawnObjects(spawnables){
@@ -81,7 +87,7 @@ function spawnObjects(spawnables){
                 // Needs implemented.
                 break;
             case Objects.MovingSquare:
-                objects.add(new MovingSquare(x, /*Math.random()*canvasHeight*/(canvasHeight/2)-(Math.random()*300), 120, 120, 0, speed/100+2, 1, "black"));
+                objects.add(new MovingSquare(x, (canvasHeight/2)-(Math.random()*300), 120, 120, 0, speed/100+2, 1, "black"));
                 break;
             case Objects.HealthPack:
                 objects.add(new HealthPack(x, Math.random()*canvasHeight, 60, 60, 0, 0, 1, "green"));
@@ -108,50 +114,22 @@ function updateObjects(){
     objects.forEach((object) => {
         if (object.x < (0 - object.width)){
             objects.delete(object);
-        }
-    });
-
-    objects.forEach((object) => {
-        if (player.isOverlapping(object)){
-            switch (object.type){
-                case Objects.Column:
-                    object.collideWith(player);
+        } else {
+            if (player.isOverlapping(object)){
+                if (object.interactionEvent(player)){
                     objects.delete(object);
-                    return;
-                case Objects.MovingSquare:
-                    object.collideWith(player);
-                    objects.delete(object);
-                    return;
-                case Objects.HealthPack:
-                    object.collect();
-                    objects.delete(object);
-                    break;
-                case Objects.Slow:
-                    object.collect();
-                    objects.delete(object);
-                    break;
-                case Objects.Phase:
-                    object.collect();
-                    objects.delete(object);
-                    break;
-                case Objects.Missile:
-                    object.interactWith(player);
-                    objects.delete(object);
-                    break;
+                }
             }
-        }
 
-        if (object.type == Objects.Missile){
-            object.target(player);
-        }
-
-        object.speedX = -speed;
-        object.move();
-        object.clampToBounds();
-
-        //setInterval(() => {
+            if (object.type == Objects.Missile){
+                object.target(player);
+            }
+    
+            object.speedX = -speed;
+            object.move();
+            object.clampToBounds();
             object.render();
-        //}, 0, 0);
+        }
     });
 
     return;
@@ -160,12 +138,7 @@ function updateObjects(){
 // Updates the game, is called every once per interval from the gameArea.
 function updateGameArea(){
     // Fetches the level config.
-    let config;
-    for (let i = 0; i < levelConfig.length; i++){
-        if (levelConfig[i].levelID == level){
-            config = levelConfig[i];
-        }
-    }
+    let config = levelConfig[level-1];
 
     // Clears the frame to redraw the scene.
     gameArea.clear();
@@ -177,12 +150,9 @@ function updateGameArea(){
     // Updates time spent in the level.
     time = ((new Date().getTime() - startTime) / 1000).toFixed(2);  // Convert milliseconds to seconds
 
-    // Sets game speed based on current level config.
-    speed = config.baseSpeed;
-
     // Attempts to spawn objects every interval.
-    if (gameArea.frameNumber % (frameRate / config.spawnFrequency) == 0.0){
-        spawnObjects(findSpawnableObjects(config.objects));
+    if (gameArea.frameNumber % (frameRate / 5.0) == 0.0){
+        spawnObjects(findSpawnableObjects(config));
     }
 
     // Updates all objects once per interval.
@@ -193,5 +163,20 @@ function updateGameArea(){
     player.move();
     player.clampToBounds();
     player.render();
+
+    player.powers.forEach((power, index) => {
+        let powerImage = new Image();
+        powerImage.src = power == null ? "../IMGS/Collectables/PhaseLocked.png" : "../IMGS/Collectables/Phase.png";
+
+        let ctx = gameArea.context;
+        ctx.drawImage(powerImage, (canvasWidth/2) + (50*index) - (50*1.5), statBoxHeight+10, 50, 50);
+
+        if (index == player.activePower){
+            let caretImage = new Image();
+            caretImage.src = "../IMGS/Collectables/Caret.png";
+            ctx.drawImage(caretImage, (canvasWidth/2) + (50*index) - (63), statBoxHeight+60, 25, 25);
+        }
+    });
+
     document.getElementById("statBox").textContent = "Level: " + level.toFixed(0) + " | Distance: " + distance.toFixed(0) + " | Time: " + time + " | Health: " + player.health.toFixed(0);
 }
