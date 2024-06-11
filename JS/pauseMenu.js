@@ -27,21 +27,28 @@ class PauseMenu{
             gameArea.restart();
         });
 
-        this.resumeBtn.addEventListener("click", function(){
+        this.resumeBtn.addEventListener("click", function(e){
             let newModal = document.getElementById("modal");
             newModal.style.display = "none";
-            this.background.style.animationPlayState = 'running';
-        });
-        
-        window.addEventListener("click", function(e){
-            let newModal = document.getElementById("modal");
             if(e.target == newModal){
                 newModal.style.display = "none";
             }
-            this.background.style.animationPlayState = 'running';
+            console.log(this);
+            window.background.style.animationPlayState = 'running';
             gameArea.clear();
             gameArea.start();
         });
+        
+        // window.addEventListener("click", function(e){
+        //     let newModal = document.getElementById("modal-content");
+        //     if(e.target == newModal){
+        //         newModal.style.display = "none";
+        //     }
+        //     // console.log(this);
+        //     this.background.style.animationPlayState = 'running';
+        //     gameArea.clear();
+        //     gameArea.start();
+        // });
     }
 
     #insertModal(){
