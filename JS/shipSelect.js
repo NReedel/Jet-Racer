@@ -54,9 +54,9 @@ next.addEventListener("click",function(){
 	file = characters[nextIndex];
 });
 
-let audio = new Audio('/Jet-Racer/AUDIO/ship_select_music.wav');
-document.addEventListener("click", () =>{
-    audio.volume = 0.5;
-    audio.play();
-    audio.loop = true;
-});
+// let audio = new Audio('/Jet-Racer/AUDIO/ship_select_music.wav');
+// document.addEventListener("click", () =>{
+//     audio.volume = 0.5;
+//     audio.play();
+//     audio.loop = true;
+// });
