@@ -1,5 +1,4 @@
 // Local variables
-this.startTime = new Date().getTime();
 let intitalSpawn = 2;
 let startSpawn = intitalSpawn;
 let endSpawn = [10,20,30];
@@ -148,7 +147,7 @@ function updateGameArea(){
     distance = Math.floor(gameArea.frameNumber / 10);
 
     // Updates time spent in the level.
-    time = ((new Date().getTime() - startTime) / 1000).toFixed(2);  // Convert milliseconds to seconds
+    time = gameArea.stopwatch.getTime().toFixed(2);
 
     // Attempts to spawn objects every interval.
     if (gameArea.frameNumber % (frameRate / 5.0) == 0.0){
