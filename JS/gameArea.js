@@ -7,19 +7,24 @@ class GameArea{
         document.body.insertBefore(this.canvas, document.body.childNodes[0]);
         this.frameNumber = 0;
         this.pause = false;
+        this.stopwatch = new Stopwatch();
     }
 
     start(){
         this.interval = setInterval(updateGameArea, 1000 / frameRate);
         this.pause = false;
+        this.stopwatch.start(); 
     }
 
     restart(){
         location.reload();
+        this.stopwatch.stop(); 
+        this.stopwatch.reset(); 
     }
 
     resume(){
         this.start()
+        this.stopwatch.start(); 
     }
 
     clear(){
@@ -29,5 +34,6 @@ class GameArea{
     stop(){
         clearInterval(this.interval);
         this.pause = true
+        this.stopwatch.stop(); 
     }
 }
