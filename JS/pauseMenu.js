@@ -10,7 +10,7 @@ class PauseMenu{
         document.body.insertBefore(this.#insertModal(), this.item);
 
         this.background = document.getElementById("background");
-        this.background.style.animationPlayState = 'paused';
+        // this.background.style.animationPlayState = 'paused'; // see objects.js player class
 
         this.modal = document.getElementById("modal");
         this.restartBtn = document.getElementById("restart");
