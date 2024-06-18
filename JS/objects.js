@@ -295,6 +295,7 @@ class Player extends LivingObject{
 		} else if (keys["Escape"]){
             let item = new PauseMenu();
             item.OpenPauseMenu();
+			item.background.style.animationPlayState = 'paused';
 		} else {
 			// Applies deceleration to the player after input is released.
 			if (this.speedY > 0.1){
